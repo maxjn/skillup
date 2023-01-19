@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="fa">
 
@@ -48,23 +51,32 @@
 
                             <li class="active"><a href="index.php">خانه</a></li>
                             <li><a href="courses.php">دوره های آموزشی</a></li>
-
+                            <?php //بررسی وضعیت ورود کاربر
+                            if (isset($_SESSION["state_login"]) && $_SESSION["state_login"] === true) {
+                                if ($_SESSION["user_type"] === 'admin') {
+                            ?>
                             <li><a href="#">مدیریت<span class="submenu-indicator"></span></a>
                                 <ul class="nav-dropdown nav-submenu">
                                     <li><a href="manage-course-admin.php">دوره ها </a></li>
                                 </ul>
                             </li>
+                            <?php } ?>
 
-                            <li><a href="#">نام کاربر<span class="submenu-indicator"></span></a>
+                            <li><a href="#"><?= $_SESSION["name"] ?><span class="submenu-indicator"></span></a>
                                 <ul class="nav-dropdown nav-submenu">
                                     <li><a href="course-taken.php">دوره های ثبت نامی</a></li>
                                     <li><a href="manage-course-user.php">دوره های من</a></li>
                                     <li><a href="logout.php">خروج </a></li>
                                 </ul>
                             </li>
+                            <?php } ?>
+                            <li class=""><a href="about.php">درباره پروژه</a></li>
 
                         </ul>
 
+                        <?php
+                        if (!(isset($_SESSION["state_login"]) && $_SESSION["state_login"] === true)) {
+                        ?>
                         <ul class="nav-menu nav-menu-social align-to-left">
 
                             <li>
@@ -76,6 +88,7 @@
                                 <a href="signup.php" class="text-white">ثبت نام</a>
                             </li>
                         </ul>
+                        <?php } ?>
                     </div>
                 </nav>
             </div>

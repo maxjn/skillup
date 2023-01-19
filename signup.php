@@ -1,5 +1,15 @@
 <?php
 include('inc/header.php');
+//وضعیت ورود کار بر را بررسی و در صورت ورود قبلی به صفحه اصلی هدایت می کند
+if (isset($_SESSION["state_login"]) && $_SESSION["state_login"] === true) {
+?>
+<script type="text/javascript">
+location.replace("index.php");
+</script>
+
+<?php
+    exit();
+}
 ?>
 <!-- ============================ Signup Wrap ================================== -->
 <section>
@@ -44,11 +54,11 @@ include('inc/header.php');
                                 </div>
                                 <div class="form-group">
                                     <label>رمز عبور</label>
-                                    <input name="Password" type="passwerd" class="form-control" placeholder="*******" />
+                                    <input name="Password" type="password" class="form-control" placeholder="*******" />
                                 </div>
                                 <div class="form-group">
-                                    <label>رمز عبور</label>
-                                    <input name="RepeatPassword" type="passwerd" class="form-control"
+                                    <label>تکرار رمز عبور</label>
+                                    <input name="RepeatPassword" type="password" class="form-control"
                                         placeholder="*******" />
                                 </div>
                                 <div class="form-group">
