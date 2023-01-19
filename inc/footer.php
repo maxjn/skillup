@@ -79,12 +79,12 @@
             </div>
             <div class="modal-body">
                 <div class="login-form">
-                    <form>
+                    <form action="action-login.php" method="post">
 
                         <div class="form-group">
                             <label>نام کاربری</label>
                             <div class="input-with-icon">
-                                <input name="UserName" type="text" class="form-control" placeholder="نام کاربری/ ایمیل">
+                                <input name="UserName" type="text" class="form-control" placeholder=" نام کاربری     ">
                                 <i class="ti-user"></i>
                             </div>
                         </div>
@@ -138,10 +138,13 @@
 <script src="assets/js/summernote.min.js"></script>
 <script src="assets/js/metisMenu.min.js"></script>
 <script src="assets/js/custom.js"></script>
+<script src="assets/js/alert.js"></script>
 <!-- ============================================================== -->
 <!-- This page plugins -->
 <!-- ============================================================== -->
-
+<?php
+include('inc/alert.php');
+?>
 </body>
 
 </html>

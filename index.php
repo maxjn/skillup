@@ -1,5 +1,9 @@
 <?php
 include('inc/header.php');
+$link = mysqli_connect("localhost", "root", "", "skillupdb"); // ایجاد اتصال به پایگاه داده
+if (mysqli_connect_errno()) //بازگرداندن خطای اتصال پایگاه داده
+    exit("مشکلی در ارتباط پایگاه به جود امده :" . mysqli_connect_error());
+mysqli_query($link, "set names utf8");
 ?>
 <!-- ============================ Hero Banner  Start================================== -->
 <div class="hero_banner image-cover image_bottom h2_bg" id="hero">
@@ -12,13 +16,13 @@ include('inc/header.php');
                         <h1 class="banner_title mb-4 font-2">در بین هزاران ساعت آموزش جستجو کنید...</h1>
                         <p class="font-lg mb-4">در بین بیش از ۲۰,۰۰۰ ساعت آموزش اسکیل آپی جستجو کنید و به جمع میلیونی
                             دانشجویان اسکیل آپ بپیوندید</p>
-                        <div class="input-group simple_search">
+                        <form class="input-group simple_search" action="courses.php" method="post">
                             <i class="fa fa-search ico"></i>
-                            <input type="text" class="form-control" placeholder="نام دوره آموزش...">
+                            <input name="search" type="text" class="form-control" placeholder="نام دوره آموزش...">
                             <div class="input-group-append">
-                                <button class="btn theme-bg" type="button">جستجو</button>
+                                <button class="btn theme-bg" type="submit">جستجو</button>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -116,329 +120,72 @@ include('inc/header.php');
         </div>
 
         <div class="row justify-content-center">
-
+            <?php
+            $counter = 0;
+            $query = "SELECT * FROM courses WHERE status=1 ORDER BY courseid DESC";             // کوئری نمايش 6 دوره آخر
+            $result = mysqli_query($link, $query);            //  اجراي کوئری
+            while ($row = mysqli_fetch_array($result)) {
+                if ($counter == 6) {
+                    break;
+                }
+                $counter++;
+            ?>
             <!-- Single Grid -->
             <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <div class="crs_grid">
                     <div class="crs_grid_thumb">
-                        <a href="course-detail.php" class="crs_detail_link">
-                            <img src="assets/img/cr-1.jpg" class="img-fluid rounded" alt="" />
+                        <a href="course-detail.php?id=<?= $row['courseid'] ?>" class="crs_detail_link">
+                            <img src="assets/img/<?= $row['image'] ?>" class="img-fluid rounded" alt="" />
                         </a>
-                        <div class="crs_video_ico">
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div class="crs_locked_ico">
-                            <i class="fa fa-lock"></i>
-                        </div>
                     </div>
                     <div class="crs_grid_caption">
                         <div class="crs_flex">
                             <div class="crs_fl_first">
-                                <div class="crs_cates cl_8"><span>طراحی اپلیکیشن</span></div>
+                                <div class="crs_cates cl_8"><span><?= $row['category'] ?></span></div>
                             </div>
+                            <?php $query_paricipants = "SELECT COUNT(*) FROM sells WHERE courseid='{$row['courseid']}'";             // کوئری گرفتن تعداد شرکت کنندگان
+                                $result_paricipants = mysqli_query($link, $query_paricipants);            //  اجراي کوئری
+                                $row_paricipants = mysqli_fetch_array($result_paricipants) ?>
                             <div class="crs_fl_last">
-                                <div class="crs_inrolled"><strong>8,350</strong>شرکت کننده</div>
+                                <div class="crs_inrolled"><strong><?= $row_paricipants['COUNT(*)'] ?> </strong>شرکت
+                                    کننده</div>
                             </div>
                         </div>
                         <div class="crs_title">
-                            <h4><a href="course-detail.php" class="crs_title_link">آموزش برنامه نویسی‌اندروید</a></h4>
+                            <h4><a href="course-detail.php?id=<?= $row['courseid'] ?>" class="crs_title_link">دوره آموزش
+                                    <?= $row['name'] ?></a></h4>
                         </div>
                         <div class="crs_info_detail">
                             <ul>
-                                <li><i class="fa fa-clock text-danger"></i><span>2ساعت 5دقیقه</span></li>
-                                <li><i class="fa fa-video text-success"></i><span>67 دوره</span></li>
-                                <li><i class="fa fa-signal text-warning"></i><span>مقدماتی</span></li>
+                                <li><i class="fa fa-clock text-danger"></i><span><?= $row['time'] ?></span></li>
+                                <li><i class="fa fa-video text-success"></i><span><?= $row['videonumber'] ?>
+                                        ویدیو</span></li>
+                                <li><i class="fa fa-signal text-warning"></i><span><?= $row['level'] ?></span></li>
                             </ul>
                         </div>
                     </div>
                     <div class="crs_grid_foot">
                         <div class="crs_flex">
                             <div class="crs_fl_first">
+                                <?php $query_author = "SELECT * FROM users WHERE userid='{$row['userid']}'";             // کوئری گرفتن نام مدرس
+                                    $result_author = mysqli_query($link, $query_author);            //  اجراي کوئری
+                                    $row_author = mysqli_fetch_array($result_author) ?>
                                 <div class="crs_tutor">
-                                    <div class="crs_tutor_thumb"><a href="instructor-detail.php"><img
-                                                src="assets/img/user-6.jpg" class="img-fluid circle" alt="" /></a></div>
-                                    <div class="crs_tutor_name"><a href="instructor-detail.php">الهام زند</a></div>
-                                </div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_price">
-                                    <h2><span class="theme-cl">149</span><span class="currency">تومان</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Single Grid -->
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="crs_grid">
-                    <div class="crs_grid_thumb">
-                        <a href="course-detail.php" class="crs_detail_link">
-                            <img src="assets/img/cr-2.jpg" class="img-fluid rounded" alt="" />
-                        </a>
-                        <div class="crs_video_ico">
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div class="crs_locked_ico">
-                            <i class="fa fa-lock"></i>
-                        </div>
-                    </div>
-                    <div class="crs_grid_caption">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_cates cl_1"><span>حسابداری</span></div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_inrolled"><strong>7,150</strong>شرکت کننده</div>
-                            </div>
-                        </div>
-                        <div class="crs_title">
-                            <h4><a href="course-detail.php" class="crs_title_link">دوره حضوری عالی پرورش مدیر مالی</a>
-                            </h4>
-                        </div>
-                        <div class="crs_info_detail">
-                            <ul>
-                                <li><i class="fa fa-clock text-danger"></i><span>15 ساعت</span></li>
-                                <li><i class="fa fa-video text-success"></i><span>22 دوره</span></li>
-                                <li><i class="fa fa-signal text-warning"></i><span>مقدماتی</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="crs_grid_foot">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_tutor">
-                                    <div class="crs_tutor_thumb"><a href="instructor-detail.php"><img
-                                                src="assets/img/team-5.jpg" class="img-fluid circle" alt="" /></a></div>
-                                    <div class="crs_tutor_name"><a href="instructor-detail.php">رابرت شکیبا</a></div>
+                                    <div class="crs_tutor_name"><a><?= $row_author['name'] ?></a></div>
                                 </div>
                             </div>
                             <div class="crs_fl_last">
                                 <div class="crs_price">
-                                    <h2><span class="theme-cl">99</span><span class="currency">تومان</span></h2>
+                                    <h2><span class="theme-cl"><?= $row['price'] ?></span><span
+                                            class="currency">تومان</span></h2>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Single Grid -->
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="crs_grid">
-                    <div class="crs_grid_thumb">
-                        <a href="course-detail.php" class="crs_detail_link">
-                            <img src="assets/img/cr-3.jpg" class="img-fluid rounded" alt="" />
-                        </a>
-                        <div class="crs_video_ico">
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div class="crs_locked_ico">
-                            <i class="fa fa-lock"></i>
-                        </div>
-                    </div>
-                    <div class="crs_grid_caption">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_cates cl_4"><span>برنامه نویسی</span></div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_inrolled"><strong>1,250</strong>شرکت کننده</div>
-                            </div>
-                        </div>
-                        <div class="crs_title">
-                            <h4><a href="course-detail.php" class="crs_title_link">آموزش ASP.Net - ساخت سایت شخصی</a>
-                            </h4>
-                        </div>
-                        <div class="crs_info_detail">
-                            <ul>
-                                <li><i class="fa fa-clock text-danger"></i><span>52 ساعت</span></li>
-                                <li><i class="fa fa-video text-success"></i><span>42 دوره</span></li>
-                                <li><i class="fa fa-signal text-warning"></i><span>مقدماتی</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="crs_grid_foot">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_tutor">
-                                    <div class="crs_tutor_thumb"><a href="instructor-detail.php"><img
-                                                src="assets/img/user-4.jpg" class="img-fluid circle" alt="" /></a></div>
-                                    <div class="crs_tutor_name"><a href="instructor-detail.php">نیلوفر کریمی</a></div>
-                                </div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_price">
-                                    <h2><span class="theme-cl">129</span><span class="currency">تومان</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Single Grid -->
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="crs_grid">
-                    <div class="crs_grid_thumb">
-                        <a href="course-detail.php" class="crs_detail_link">
-                            <img src="assets/img/cr-4.jpg" class="img-fluid rounded" alt="" />
-                        </a>
-                        <div class="crs_video_ico">
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div class="crs_locked_ico">
-                            <i class="fa fa-lock"></i>
-                        </div>
-                    </div>
-                    <div class="crs_grid_caption">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_cates cl_5"><span>فیزیک</span></div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_inrolled"><strong>8,350</strong>شرکت کننده</div>
-                            </div>
-                        </div>
-                        <div class="crs_title">
-                            <h4><a href="course-detail.php" class="crs_title_link">تدریس کامل کلاس فیزیک جامع کنکور
-                                    تجربی</a></h4>
-                        </div>
-                        <div class="crs_info_detail">
-                            <ul>
-                                <li><i class="fa fa-clock text-danger"></i><span>8 ساعت</span></li>
-                                <li><i class="fa fa-video text-success"></i><span>61 دوره</span></li>
-                                <li><i class="fa fa-signal text-warning"></i><span>مقدماتی</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="crs_grid_foot">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_tutor">
-                                    <div class="crs_tutor_thumb"><a href="instructor-detail.php"><img
-                                                src="assets/img/user-3.jpg" class="img-fluid circle" alt="" /></a></div>
-                                    <div class="crs_tutor_name"><a href="instructor-detail.php">احمد سنایی</a></div>
-                                </div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_price">
-                                    <h2><span class="theme-cl">49</span><span class="currency">تومان</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Single Grid -->
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="crs_grid">
-                    <div class="crs_grid_thumb">
-                        <a href="course-detail.php" class="crs_detail_link">
-                            <img src="assets/img/cr-5.jpg" class="img-fluid rounded" alt="" />
-                        </a>
-                        <div class="crs_video_ico">
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div class="crs_locked_ico">
-                            <i class="fa fa-lock"></i>
-                        </div>
-                    </div>
-                    <div class="crs_grid_caption">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_cates cl_6"><span>ریاضیات</span></div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_inrolled"><strong>3,340</strong>شرکت کننده</div>
-                            </div>
-                        </div>
-                        <div class="crs_title">
-                            <h4><a href="course-detail.php" class="crs_title_link">تدریس ریاضی و آمار دهم انسانی</a>
-                            </h4>
-                        </div>
-                        <div class="crs_info_detail">
-                            <ul>
-                                <li><i class="fa fa-clock text-danger"></i><span>2ساعت 5دقیقه</span></li>
-                                <li><i class="fa fa-video text-success"></i><span>43 دوره</span></li>
-                                <li><i class="fa fa-signal text-warning"></i><span>مقدماتی</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="crs_grid_foot">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_tutor">
-                                    <div class="crs_tutor_thumb"><a href="instructor-detail.php"><img
-                                                src="assets/img/user-2.jpg" class="img-fluid circle" alt="" /></a></div>
-                                    <div class="crs_tutor_name"><a href="instructor-detail.php">مرضیه حسینی</a></div>
-                                </div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_price">
-                                    <h2><span class="theme-cl">119</span><span class="currency">تومان</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Single Grid -->
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <div class="crs_grid">
-                    <div class="crs_grid_thumb">
-                        <a href="course-detail.php" class="crs_detail_link">
-                            <img src="assets/img/cr-6.jpg" class="img-fluid rounded" alt="" />
-                        </a>
-                        <div class="crs_video_ico">
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div class="crs_locked_ico">
-                            <i class="fa fa-lock"></i>
-                        </div>
-                    </div>
-                    <div class="crs_grid_caption">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_cates cl_7"><span>پروژه محور</span></div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_inrolled"><strong>6,450</strong>شرکت کننده</div>
-                            </div>
-                        </div>
-                        <div class="crs_title">
-                            <h4><a href="course-detail.php" class="crs_title_link">آموزش ساخت فروشگاه دیجی استایل با
-                                    لاراول</a></h4>
-                        </div>
-                        <div class="crs_info_detail">
-                            <ul>
-                                <li><i class="fa fa-clock text-danger"></i><span>7 ساعت</span></li>
-                                <li><i class="fa fa-video text-success"></i><span>57 دوره</span></li>
-                                <li><i class="fa fa-signal text-warning"></i><span>مقدماتی</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="crs_grid_foot">
-                        <div class="crs_flex">
-                            <div class="crs_fl_first">
-                                <div class="crs_tutor">
-                                    <div class="crs_tutor_thumb"><a href="instructor-detail.php"><img
-                                                src="assets/img/user-1.jpg" class="img-fluid circle" alt="" /></a></div>
-                                    <div class="crs_tutor_name"><a href="instructor-detail.php">مسعود کیانی</a></div>
-                                </div>
-                            </div>
-                            <div class="crs_fl_last">
-                                <div class="crs_price">
-                                    <h2><span class="theme-cl">199</span><span class="currency">تومان</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <?php } ?>
 
         </div>
 
@@ -577,7 +324,7 @@ include('inc/header.php');
                             <h6 class="mb-0 mr-3">اشتراک گذاری دوره هایتان با سایرین</h6>
                         </div>
                     </div>
-                    <div class="text-right mt-4"><a href="curses.php" class="btn btn-md text-light theme-bg">شروع ثبت
+                    <div class="text-right mt-4"><a href="courses.php" class="btn btn-md text-light theme-bg">شروع ثبت
                             نام</a>
                     </div>
                 </div>

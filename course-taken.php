@@ -1,5 +1,19 @@
 <?php
 include('inc/header.php');
+//وضعیت ورود کار بر را بررسی و در صورت وارد نشده بودن  به صفحه ورود هدایت می کند
+if (!(isset($_SESSION["state_login"]) && $_SESSION["state_login"] === true)) {
+    $_SESSION["alert"] = "First";
+?>
+<script type='text/javascript'>
+location.replace('login.php');
+</script>
+<?php
+    exit();
+}
+$link = mysqli_connect("localhost", "root", "", "skillupdb"); // ایجاد اتصال به پایگاه داده
+if (mysqli_connect_errno()) //بازگرداندن خطای اتصال پایگاه داده
+    exit("مشکلی در ارتباط پایگاه به جود امده :" . mysqli_connect_error());
+mysqli_query($link, "set names utf8");
 ?>
 <!-- ============================ Page Title Start================================== -->
 <section class="page-title gray">
@@ -30,7 +44,6 @@ include('inc/header.php');
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">تصویر</th>
                     <th scope="col">نام دوره</th>
                     <th scope="col">نام مدرس</th>
                     <th scope="col">دسته بندی </th>
@@ -42,26 +55,37 @@ include('inc/header.php');
                 </tr>
             </thead>
             <tbody>
+                <?php
+                $query = "SELECT * FROM sells WHERE userid='{$_SESSION['userid']}' "; //کوئری گرفتن تمام خرید های کاربر
+                $result = mysqli_query($link, $query);
+                //حلقه نمایش خرید ها
+
+                while ($row = mysqli_fetch_array($result)) {
+                    //کوئری گرفتن اطلاعات دوره
+                    $query_course = "SELECT * FROM courses WHERE courseid='{$row['courseid']}' ";
+                    $result_course = mysqli_query($link, $query_course);
+                    $row_course = mysqli_fetch_array($result_course);
+
+                    //کوئری گرفتن اطلاعات مدرس
+                    $query_teacher = "SELECT * FROM users WHERE userid='{$row_course['userid']}' ";
+                    $result_teacher = mysqli_query($link, $query_teacher);
+                    $row_teacher = mysqli_fetch_array($result_teacher);
+                ?>
                 <tr>
-                    <th scope="row">1</th>
+                    <th scope="row"><?= $row['sellid'] ?></th>
+                    <td> <?= $row_course['name'] ?></td>
+                    <td> <?= $row_teacher['name'] ?></td>
+                    <td> <?= $row_course['category'] ?></td>
+                    <td> <?= $row_course['level'] ?></td>
+                    <td> <?= $row_course['time'] ?></td>
+                    <td> <?= $row_course['videonumber'] ?> ویدیو</td>
+                    <td> <?= $row_course['price'] ?> ت</td>
                     <td>
-                        <div class="crs_tutor_thumb">
-                            <img src="assets/img/team-5.jpg" class="img-fluid circle" alt="">
-                            </a>
-                        </div>
-                    </td>
-                    <td> وب</td>
-                    <td> مقدماتی</td>
-                    <td> 5 ساعت</td>
-                    <td> 3 ویدیو</td>
-                    <td> 200000</td>
-                    <td> پخش شده</td>
-                    <td> 2</td>
-                    <td>
-                        <a href="action-class-manage.phpj?id=" title="دانلود" class="fa fa-download"></a>
+                        <a href="<?= $row_course['link'] ?>" title="دانلود" class="fa fa-download"></a>
 
                     </td>
                 </tr>
+                <?php } ?>
             </tbody>
         </table>
     </div>

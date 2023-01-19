@@ -15,7 +15,7 @@
 - Signup , Login
 - Showing courses and their detailes
 - Managing courses (add,delete,edit)
-- Search courses
+- Searching courses
 - Managing taken courses
 
 ###### Install
@@ -24,11 +24,11 @@ Nothing too fancy just import the db and run it on your local srver :)
 
 ###### Code Description Video
 
-[Description Video]().
+[Description Video](https://drive.google.com/file/d/1FfZ5n-cCWHkT3Rr8QTgSZN5tzmjmy4bY/view?usp=share_link).
 
 ###### Images
 
 Index
-![Logo of the project]()
-Manage-Product
-![Logo of the project]()
+![Index](assets/img/index.png)
+Manage-Course-User
+![Manage Course User](assets/img/manage-course-user.png)

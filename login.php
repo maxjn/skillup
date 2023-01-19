@@ -1,5 +1,15 @@
 <?php
 include('inc/header.php');
+//وضعیت ورود کار بر را بررسی و در صورت ورود قبلی به صفحه اصلی هدایت می کند
+if (isset($_SESSION["state_login"]) && $_SESSION["state_login"] === true) {
+?>
+<script type="text/javascript">
+location.replace("index.php");
+</script>
+
+<?php
+    exit();
+}
 ?>
 <!-- ============================ Login Wrap ================================== -->
 <section>
@@ -27,11 +37,11 @@ include('inc/header.php');
                                 </div>
                                 <div class="form-group">
                                     <label>رمز عبور</label>
-                                    <input name="Password" type="text" class="form-control" placeholder="*******" />
+                                    <input name="Password" type="password" class="form-control" placeholder="*******" />
                                 </div>
 
                                 <div class="form-group">
-                                    <button type="button"
+                                    <button type="submit"
                                         class="btn full-width btn-md theme-bg text-white">ورود</button>
                                 </div>
                             </div>
